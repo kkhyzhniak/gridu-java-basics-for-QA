@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class App
 {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, NegativeHoursInCourseException {
         String dateString = "01-06-2020";
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Student firstStudent = new Student("John Doe", "Java Developer", formatter.parse(dateString));

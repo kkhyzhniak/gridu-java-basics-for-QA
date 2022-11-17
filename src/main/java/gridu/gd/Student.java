@@ -3,6 +3,7 @@ package gridu.gd;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Student {
 
@@ -55,7 +56,7 @@ public class Student {
         this.trainingProgram = trainingProgram;
     }
 
-    Date getCourseEndDate() {
+    Date getCourseEndDate() throws NegativeHoursInCourseException {
         Calendar c = Calendar.getInstance();
         c.setTime(this.startDate);
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
@@ -65,8 +66,12 @@ public class Student {
 
         int remainingCoursesDuration = 0;
         for(Course course : trainingProgram) {
+            if (course.getDuration() < 0) {
+                throw new NegativeHoursInCourseException();
+            }
             remainingCoursesDuration += course.getDuration();
         }
+
         int daysOfFirstWeekLeft = 6 - dayOfWeek;
         if (remainingCoursesDuration > daysOfFirstWeekLeft * DAY_WORKING_HOURS) {
             remainingCoursesDuration -= daysOfFirstWeekLeft * DAY_WORKING_HOURS;
@@ -94,5 +99,10 @@ public class Student {
            return String.format("%d hours", Math.abs(hours)%24);
         }
        return String.format("%d d %d hours", Math.abs(hours)/24, Math.abs(hours)%24);
+    }
+
+    public long getDifferenceBetweenReportAndEndDatesInHours(Date reportDate) throws NegativeHoursInCourseException {
+        long diffInMillies = this.getCourseEndDate().getTime() - reportDate.getTime();
+        return TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 }
